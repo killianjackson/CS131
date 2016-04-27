@@ -1,0 +1,68 @@
+No-op Kenken API
+
+noop_kenken(N,C,T,O)
+
+N - Defines the size of the matrix i.e. NxN
+C - List of constraints. Similar to constraints of kenken and plain_kenken but
+	there is no operator attached to each constraint.
+T - This is a list of lists of integers representing the NxN grid. T will 
+	be our answer grid.
+O - This is the list of operations corresponding to each constraint. 
+
+The majority of the implementation for kenken/3 can be reused for noop_kenken/4
+but adjustments need to be made to evalConstraints/2. evalConstraints/2 needs
+to be changed to evalConstraints/3 with the following parameters.
+
+evalConstraints(Mat, (SoP, List), O)
+evalConstraints(Mat, (DoQ, JSqr, KSqr), O)
+
+SoP - represents either the sum or the product
+DoQ - represents either the difference or the quotient
+O - the operation that corresponds to the constraint
+
+Within the implementation of evalConstraints/3, there needs to be another
+predicate to determine which operation corresponds to the constraint. This
+predicate will involve using ; to or sum/4 and mult/4 predicates for the
+first evalConstraints and to or sub/4 and div/4 for the second evalConstraints.
+As a result of this predicate called within evalConstraints, on successful
+calls O of evalConstraints will be set to the correct operator and on
+unsuccessful calls will check the other operation option.
+
+example:
+
+kenken_testcase(
+  6,
+  [
+   (11, [1-1, 2-1]),
+   (2, 1-2, 1-3),
+   (20, [1-4, 2-4]),
+   (6, [1-5, 1-6, 2-6, 3-6]),
+   (3, 2-2, 2-3),
+   (3, 2-5, 3-5),
+   (240, [3-1, 3-2, 4-1, 4-2]),
+   (6, [3-3, 3-4]),
+   (6, [4-3, 5-3]),
+   (7, [4-4, 5-4, 5-5]),
+   (30, [4-5, 4-6]),
+   (6, [5-1, 5-2]),
+   (9, [5-6, 6-6]),
+   (8, [6-1, 6-2, 6-3]),
+   (2, 6-4, 6-5)
+  ]
+).
+
+?- fd_set_vector_max(255), kenken_testcase(N,C), noop_kenken(N,C,T,O).
+
+C = [11+[1-1,2-1], /(2,1-2,1-3), 20*[1-4,2-4], 6*[1-5,1-6,2-6,3-6],
+     -(3,2-2,2-3), /(3,2-5,3-5), 240*[3-1,3-2,4-1,4-2], 6*[3-3,3-4],
+     6*[4-3,5-3], 7+[4-4,5-4,5-5], 30*[4-5,4-6], 6*[5-1,5-2],
+     9+[5-6,6-6], 8+[6-1,6-2,6-3], /(2,6-4,6-5)]
+N = 6
+T = [[5,6,3,4,1,2],
+     [6,1,4,5,2,3],
+     [4,5,2,3,6,1],
+     [3,4,1,2,5,6],
+     [2,3,6,1,4,5],
+     [1,2,5,6,3,4]] 
+O = [+,/,*,*,-,/,*,*,*,+,*,*,+,+,/] ?
+

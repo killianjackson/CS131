@@ -1,0 +1,51 @@
+contain x set: This is a helper function that checks if item "x" is in "set" does so by recursively iterating
+through set. Returns true if "set" contains "x" and false otherwise.
+
+subset a b: I implemented this function using the helper function "contain x set" to check if each member of "a"
+is also a member of "b". Returns true if so and false otherwise.
+
+equal_sets a b: In this function, "subset a b" is called twice checking if "a" is a subset of "b" and if "b" is
+a subset of "a". If they are subsets of each other this function returns true and false otherwise.
+
+set_union a b: This function takes the union of "a" and "b" by using the list concatenation operator "@"
+
+set_intersection a b: I implemented this function by recursively iterating through "a" using "contain x set" to
+check if each member of "a" is also a member of "b". If it is a member of "b", the function tracks that
+member of "a" and recursively calls "set_intersection" on the rest of "a".
+
+set_diff a b: This function works similarly to "set_intersection a b" by recursively iterating through "a" using
+"contain x set" to check if each member of "a" is also a member of "b". However, in the case of this function,
+if the member of "a" is not also a member of "b", the function tracks that member of "a" and recursively calls 
+"set_diff" on the rest of "a".
+
+computed_fixed_point eq f x: This function calls the function "f" on "x" and uses the equality operator "eq" to
+compare "f x" to "x". The function continues by recursively comparing f(x)=x, f(f(x))=f(x), etc. It returns the
+fixed point if one exists and loops forever if not.
+
+compute_p_calls f p x: This is a helper function that calls the function "f" on "x" "p" times (i.e. if p = 3
+f(f(f(x)))). The function returns the result.
+
+computed_periodic_point eq f p x: This function uses the function "compute_p_calls f p x" to call "f" on "x" "p
+times and uses the equality operator "eq" to compare the result of "compute_p_calls f p x" with "x". The function
+continues recursively, for example in the case of p = 2, during the first iteration and "eq" is called on f(f(x))
+and x. During the second iteration, "eq" is called on f(f(f(x) and f(x) and so on.
+
+filter_blind_alleys g: This function takes the input grammar "g" and filters out all blind alley rules in the
+grammar and returns the filtered grammar in the original order. It does so by building a list of rules 
+(term_list) that are not blind alley rules. The "build_terminal_list" function accomplishes this by recursively
+iterating through the rules of "g" using the helper functions "check_rhs_terminates" and "contain" to determine
+if the right hand side of the rule will result in terminal symbols and if the rule in question has already been
+added to "term_list", respectively. If satisfys both of these conditions, then the rule in question is appended
+to the front of building "term_list". The function "check_rhs_terminates" determines if the input list is the
+right hand side of a terminating rule by scanning for terminating symbols and by using the "check_term_list"
+function to see if the nonterminating symbols have rules in "term_list". In my main function,
+"filter_blind_alleys", I call "computed_fixed_point" with the arguments "equal_sets", "build_terminal_list rules"
+, and "[]" respectively. The result of doing so is "build_terminal_list" being called on "rules" and a building
+list of terminal rules until "build_terminal_list" results in the same list of terminal rules indicating that all
+terminal rules have been found. I originally tried to implement this by tracking the symbols themselves that
+could eventually terminate; however, I had difficulty getting this implementation to function properly so I 
+adjusted my stragegy to instead track the entire terminating rule. Because the final set of rules is not in the
+correct order, the last helper function "filter_and_order" uses the original grammar to reorder the final set of
+rules. 
+
+     

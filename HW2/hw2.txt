@@ -1,0 +1,74 @@
+productionFunction & convert_grammar:
+
+To implement convert_grammar, I first implemented a helper function
+called productionFunction that would return the right hand sides for
+a given nonterminal symbol. To implement productionFunction, I scanned
+through the hw1 grammar list of rules and matched the left hand side
+of each rule to the nonterminal symbol inputted to productionFunction.
+By doing so, I recursively built a list of right hand sides of the rules
+that corresponded to the inputted nonterminal symbol. In convert_grammar,
+I extract the start symbol and list of rules from the hw1 grammar and then
+the function returns a hw2 grammar consisting of a tuple of the start
+symbol and the grammar's production function. The production function takes
+a nonterminal symbol as an argument and then calls the helper function
+productionFunction on the nonterminal symbol and the grammar's list of rules.
+
+parse_prefix, matcher, check_symbols, check_rhs:
+
+My implementation for parse_prefix is based on the helper function matcher
+that consists of two nested functions check_symbols and check_rhs. The matcher
+function does the real work for parse_prefix. The matcher function defines
+check_symbols and check_rhs rules and then has the main function call to
+check_rhs. check_rhs is used to iterate through the list of right hand sides
+of rules. This list of right hand sides of rules initially corresponds to the
+right hand sides corresponding to a specific nonterminal symbol. When
+check_rhs is initially called, I pass it the start symbol, the start symbols
+list of right hand sides (the result of prodFunction nt), the given acceptor,
+the current derivative ([] initially), and the given fragment. check_rhs
+recursively iterates through each right hand side. If the list of right hand
+sides is empty, check_rhs returns None. Otherwise, for each right hand side, my
+implementation calls check_symbols on that right hand side (also takes the
+production function, acceptor, current derivative including the right hand side,
+and the current fragment as inputs). If the return value is None check_rhs is
+called again moving onto the next right hand side. If the return value is Some (x,y)
+check_rhs returns that value.
+
+The function check_symbols is called on each right hand side that check_rhs
+iterates to. This function effectively iterates through the right hand side
+looking for a prefix. The implementation begins by checking if the input
+fragment to be matched is empty. If so, it checks if the inputted right hand
+side is also empty indicating that we have considered every terminal in the
+fragment and every symbol in the right hand side. The acceptor is called on
+the current derivation and suffix (in this case []) and the result is returned.
+If the right hand side was not also empty, this indicates that we have reached
+the end of the fragment without using all the symbols in the right hand side. So,
+check_symbols returns None. If the fragment was not empty, my implementation
+grabs the first symbol in the fragment. The right hand side is again checked to
+see if it is empty because similarly if it is empty we have reached the end of the
+right hand side and need to call the acceptor. The "else None" in this situation
+will never be executed because this if statement cannot be reached unless the
+right hand side is matched to the empty string. If the right hand side is not
+empty, my implementation extracts the first symbol from the right hand side. If
+it is terminal, I check to see if it is equal to the first symbol of the fragment
+that was grabbed earlier. If it is equal, check_symbols is recursively called on
+the remainder of the right hand rule and the suffix of the fragment. If the first
+symbol from the right hand side is nonterminal, my implementation calls matcher
+on the nonterminal. What calling matcher does in this situation is stops pauses
+iteration through the current right hand side to follow the nonterminal resulting
+in a new set of right hand sides for check_rhs (called by matcher) to iterate
+through. The matcher function recursively continues to follow nonterminals until
+it reaches a nonterminal symbol after which it bubbles up and continues iterating
+through the right hand sides of previous calls to check_symbols. When matcher is
+recursively called, the reason for (check_symbols (prodFunction) tail acceptor)
+being passed as the acceptor input is to ensure that we don't return before
+completely iterating through each right hand side rule that we have begun
+iterating through in previous calls.
+
+The function parse_prefix is implemented by extracting the start symbol and
+production function from the input grammar and then calling matcher on
+the production function, start symbol, acceptor, empty derivation list, and
+the given fragment.
+
+In implementing matcher, I considered possibly using mutual recursion; however,
+I used recursive calls to matcher and the two nested functions to avoid the need
+to use mutual recursion.
